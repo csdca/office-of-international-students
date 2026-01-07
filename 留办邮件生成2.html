@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BIT留学生办公室邮件生成助手</title>
+    <style>
+        /* ================= 变量定义 (BIT 官方配色风格) ================= */
+        :root {
+            --bit-green: #00733E; /* 北理绿 */
+            --bit-red: #d9534f;   /* 警告红 */
+            --bg-color: #f5f7fa;
+            --card-bg: #ffffff;
+            --text-primary: #333333;
+            --text-secondary: #666666;
+            --border-color: #e8e8e8;
+        }
+
+        body {
+            font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Microsoft YaHei", sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 0;
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* ================= 顶部导航栏 ================= */
+        .header {
+            width: 100%;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            padding: 15px 0;
+            margin-bottom: 30px;
+            border-top: 5px solid var(--bit-green);
+        }
+        
+        .header-content {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* Logo 样式 */
+        .bit-logo {
+            height: 50px; 
+            width: auto;
+            display: block;
+        }
+
+        .app-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--bit-green);
+            letter-spacing: 1px;
+        }
+        
+        .sub-title {
+            font-size: 12px;
+            color: #999;
+            margin-top: 2px;
+        }
+
+        /* ================= 主容器卡片 ================= */
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+            box-sizing: border-box;
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+            padding-left: 10px;
+            border-left: 4px solid var(--bit-green);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .hint-text {
+            font-size: 12px;
+            font-weight: normal;
+            background: #e6f7ef;
+            color: var(--bit-green);
+            padding: 4px 10px;
+            border-radius: 20px;
+        }
+
+        /* ================= 网格布局 ================= */
+        .grid-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+
+        /* 统一盒子样式 (强制高度60px) */
+        .box-style {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            font-size: 14px;
+            font-weight: 600;
+            color: #444;
+            box-sizing: border-box;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 普通选项交互 */
+        .item-box {
+            cursor: pointer;
+            user-select: none;
+        }
+        .item-box:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            border-color: var(--bit-green);
+        }
+        .item-box.active {
+            background: #f0f9f4;
+            border-color: var(--bit-green);
+            color: var(--bit-green);
+            box-shadow: 0 0 0 1px var(--bit-green) inset;
+        }
+
+        /* 导师推荐表行 */
+        .rec-box {
+            cursor: default;
+        }
+
+        /* 导师推荐表内部按钮 */
+        .sub-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            height: 34px;
+            padding: 0 14px;
+            margin-left: 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: normal;
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            font-size: 13px;
+            transition: all 0.2s;
+            color: #666;
+        }
+        .sub-btn:hover {
+            border-color: var(--bit-green);
+            color: var(--bit-green);
+            background: white;
+        }
+        .sub-btn.active {
+            background-color: var(--bit-green);
+            color: white;
+            border-color: var(--bit-green);
+            box-shadow: 0 2px 6px rgba(0, 115, 62, 0.3);
+        }
+
+        /* ================= 序号圆圈 ================= */
+        .badge {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            line-height: 24px;
+            text-align: center;
+            border-radius: 50%;
+            background-color: var(--bit-green);
+            color: white;
+            font-size: 12px;
+            font-family: Arial, sans-serif;
+            margin-right: 12px;
+            opacity: 0;
+            transform: scale(0.5);
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            flex-shrink: 0;
+        }
+
+        .badge-placeholder {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+
+        .active .badge {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .badge-inner {
+            display: inline-block;
+            width: 0;
+            height: 16px;
+            line-height: 16px;
+            text-align: center;
+            border-radius: 50%;
+            background-color: white;
+            color: var(--bit-green);
+            font-size: 10px;
+            font-weight: bold;
+            opacity: 0;
+            overflow: hidden;
+            transition: all 0.2s;
+            margin-right: 0;
+        }
+        .sub-btn.active .badge-inner {
+            width: 16px;
+            opacity: 1;
+            margin-right: 6px;
+        }
+
+        /* ================= 底部区域 ================= */
+        .preview-section {
+            background: #fafafa;
+            border-radius: 8px;
+            padding: 20px;
+            border: 1px solid #eee;
+        }
+
+        .btn-row {
+            display: flex;
+            justify-content: center; /* 按钮整体居中 */
+            gap: 20px; /* 两个按钮之间的间距 */
+            margin-bottom: 15px;
+        }
+
+        button {
+            padding: 10px 30px;
+            font-size: 14px;
+            cursor: pointer;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: white;
+            min-width: 140px;
+            justify-content: center;
+        }
+
+        /* 复制按钮：绿色 (左侧) */
+        .btn-copy {
+            background-color: var(--bit-green);
+            box-shadow: 0 4px 10px rgba(0, 115, 62, 0.2);
+        }
+        .btn-copy:hover {
+            background-color: #005c32;
+            transform: translateY(-2px);
+        }
+
+        /* 重置按钮：红色 (右侧) */
+        .btn-clear {
+            background-color: var(--bit-red);
+            box-shadow: 0 4px 10px rgba(217, 83, 79, 0.2);
+        }
+        .btn-clear:hover {
+            background-color: #c9302c;
+            transform: translateY(-2px);
+        }
+
+        textarea {
+            width: 100%;
+            height: 350px;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: "Consolas", "Monaco", "Courier New", monospace;
+            line-height: 1.6;
+            resize: vertical;
+            background-color: white;
+            box-sizing: border-box;
+            color: #444;
+            outline: none;
+        }
+        textarea:focus {
+            border-color: var(--bit-green);
+            box-shadow: 0 0 0 3px rgba(0, 115, 62, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            .grid-container { grid-template-columns: 1fr; }
+            .header-content { flex-direction: column; gap: 10px; }
+            .section-title { flex-direction: column; align-items: flex-start; gap: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+<header class="header">
+    <div class="header-content">
+        <div class="logo-area">
+            <img src="bit_logo.jpg" alt="BIT Logo" class="bit-logo" onerror="this.style.display='none'">
+            <div>
+                <div class="app-title">BIT留学生办公室</div>
+                <div class="sub-title">Office of International Students</div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<div class="container">
+    
+    <div class="section-title">
+        <span>申请材料问题反馈 (Application Feedback)</span>
+        <span class="hint-text">💡 提示：点击顺序即为邮件中的排列顺序</span>
+    </div>
+
+    <div class="grid-container" id="optionsArea">
+        </div>
+
+    <div class="preview-section">
+        <div class="btn-row">
+            <button class="btn-copy" onclick="copyText()">
+                <span>📋</span> 复制全部 (Copy)
+            </button>
+
+            <button class="btn-clear" onclick="clearAll()">
+                <span>↺</span> 重置 (Reset)
+            </button>
+        </div>
+        <textarea id="resultBox" placeholder="请在上方点击选项，生成的邮件内容将实时显示在这里..."></textarea>
+    </div>
+</div>
+
+<script>
+    // ================= 数据定义 =================
+    const emailHeader = `Dear applicant,
+
+Congratulations on passing our comprehensive interview.
+Your application materials are nearly complete; however, the following document(s) are still missing. We have returned your application—please re-submit it with the missing document(s) within five days. The earlier, the better.
+
+Please note that your application will not be processed further until all required documents are successfully uploaded.
+
+Thank you for your prompt attention.`;
+
+    const emailFooter = `
+
+Kind regards,
+
+Office of International Students`;
+
+    /* Items 配置 - 严格内容 */
+    const items = [
+        { key: "visa", label: "缺在华签证", text: "Please upload a valid visa for the People's Republic of China;" },
+        { key: "medical", label: "体检表过期", text: "Physical Examination Record for Foreigner has expired; please retake and upload it;" },
+        { key: "blood", label: "缺独立血液报告 (HIV/Syphilis)", text: "Please upload independent blood test reports for HIV and Syphilis;" },
+        { key: "police", label: "无犯罪证明过期", text: "Non-criminal Record will expire in March, when the application for CSC starts, so please reapply for the non-criminal Record and submit it;" },
+        
+        // 导师推荐表内部项
+        { key: "rec_old", label: "不是最新版", text: "Please submit the new version of Recommendation Form for International Students by BIT Advisors (Download from http://isc.bit.edu.cn/resourcesoffices/resources/download/index.htm);" },
+        { key: "rec_no_num", label: "缺申请编号", text: "Please fill up Application No. on Recommendation Form for International Students by BIT Advisors;" },
+
+        { key: "prof_letter", label: "缺少一封副教授级别及以上的推荐信", text: "Please submit another Recommendation Letter by a professor or an associate professor instead of an assistant professor;" },
+        { key: "study_plan", label: "Study plan中导师未签字", text: "The advisor's signature is NOT filled in your Study Plan;" },
+        { key: "bachelor", label: "缺本科毕业证书", text: "Please upload the certified copy of bachelor's diploma and academic transcript;" },
+        { key: "transcript", label: "缺本科成绩单", text: "Please upload the certified copy of bachelor's academic transcript;" },
+        { key: "paper", label: "缺发表论文的复印件", text: "Please upload the copies of your published research papers;" },
+        { key: "language", label: "语言水平证明过期", text: "The proof of language proficiency has expired." }
+    ];
+
+    let selectionQueue = [];
+
+    // ================= 渲染逻辑 =================
+    function init() {
+        const container = document.getElementById('optionsArea');
+        container.innerHTML = "";
+
+        // 1. 渲染前4个
+        for(let i=0; i<4; i++) {
+            renderSimpleItem(items[i], container);
+        }
+
+        // 2. 渲染 "导师推荐表" 组合行
+        const recContainer = document.createElement('div');
+        recContainer.className = 'box-style rec-box'; 
+        
+        // 左侧占位符 + 标题
+        recContainer.innerHTML = `
+            <span class="badge-placeholder"></span>
+            <span style="color:#333; font-weight:600;">导师推荐表</span>
+        `;
+        
+        appendSubButton(recContainer, items[4]);
+        appendSubButton(recContainer, items[5]);
+
+        container.appendChild(recContainer);
+
+        // 3. 渲染剩余项
+        for(let i=6; i<items.length; i++) {
+            renderSimpleItem(items[i], container);
+        }
+    }
+
+    function renderSimpleItem(item, parent) {
+        const div = document.createElement('div');
+        div.className = 'box-style item-box';
+        div.id = `box-${item.key}`;
+        div.onclick = () => toggle(item.key);
+        div.innerHTML = `<span class="badge" id="badge-${item.key}"></span>${item.label}`;
+        parent.appendChild(div);
+    }
+
+    function appendSubButton(parent, item) {
+        const span = document.createElement('span');
+        span.className = 'sub-btn';
+        span.id = `box-${item.key}`;
+        span.onclick = (e) => {
+            e.stopPropagation();
+            toggle(item.key);
+        };
+        span.innerHTML = `<span class="badge-inner" id="badge-${item.key}"></span>${item.label}`;
+        parent.appendChild(span);
+    }
+
+    // ================= 交互逻辑 =================
+    function toggle(key) {
+        const idx = selectionQueue.indexOf(key);
+        if (idx === -1) {
+            selectionQueue.push(key);
+        } else {
+            selectionQueue.splice(idx, 1);
+        }
+        updateUI();
+        generateText();
+    }
+
+    function updateUI() {
+        // 重置
+        items.forEach(item => {
+            const box = document.getElementById(`box-${item.key}`);
+            const badge = document.getElementById(`badge-${item.key}`);
+            if (box) box.classList.remove('active');
+            if (badge) badge.innerText = "";
+        });
+
+        // 更新
+        selectionQueue.forEach((key, index) => {
+            const box = document.getElementById(`box-${key}`);
+            const badge = document.getElementById(`badge-${key}`);
+            if (box && badge) {
+                box.classList.add('active');
+                badge.innerText = index + 1;
+            }
+        });
+    }
+
+    function generateText() {
+        if (selectionQueue.length === 0) {
+            document.getElementById('resultBox').value = "";
+            return;
+        }
+        
+        let content = "";
+        selectionQueue.forEach((key, index) => {
+            const item = items.find(i => i.key === key);
+            content += `${index + 1}. ${item.text}\n`;
+        });
+
+        document.getElementById('resultBox').value = emailHeader + "\n\n" + content + emailFooter;
+    }
+
+    function copyText() {
+        const box = document.getElementById('resultBox');
+        if (!box.value) return;
+        box.select();
+        document.execCommand('copy');
+        
+        const btn = document.querySelector('.btn-copy');
+        const oldHTML = btn.innerHTML;
+        btn.innerHTML = "<span>✅</span> 已复制 (Copied)";
+        btn.style.backgroundColor = "#005c32"; // 保持深绿反馈
+        setTimeout(() => {
+            btn.innerHTML = oldHTML;
+            btn.style.backgroundColor = ""; // 恢复原样
+        }, 2000);
+    }
+
+    function clearAll() {
+        selectionQueue = [];
+        updateUI();
+        document.getElementById('resultBox').value = "";
+    }
+
+    init();
+</script>
+</body>
+</html>
